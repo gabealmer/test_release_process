@@ -9,4 +9,4 @@ jobs:
         id: regex-match
         with:
           text: ${{ github.event.pull_request.title }}
-          regex: '${{ vars.JIRA_ISSUE_PREFIX }}-\d+$'
+          regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
