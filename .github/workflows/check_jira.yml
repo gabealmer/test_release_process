@@ -7,14 +7,23 @@ jobs:
     steps:
       - name: 'Check Pull Request Title'
         uses: actions-ecosystem/action-regex-match@v2
-        id: regex-match
+        id: regex-match-title
         with:
           text: ${{ github.event.pull_request.title }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
 
+      - name: 'Check Pull Request Title'
+        if: ${{ steps.regex-match-title.outputs.match == '' }}
+        uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match-body
+        with:
+          text: ${{ github.event.pull_request.body }}
+          regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
+          flags: gm
+
       - name: 'Fail'
         uses: actions/github-script@v3
-        if: ${{ steps.regex-match.outputs.match == '' }}
+        if: ${{ steps.regex-match-title.outputs.match == ''  && steps.regex-match-body.outputs.match == ''}}
         with:
           script: |
-            core.setFailed('No Jira Issue found, e.x: ${{ vars.JIRA_KEY_PREFIX }}-123!')
+            core.setFailed('No Jira Issue found in title, body, branch or commits, e.x: ${{ vars.JIRA_KEY_PREFIX }}-123!')
