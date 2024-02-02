@@ -1,0 +1,12 @@
+name: Check for Jira issue
+on: [pull_request]
+
+jobs:
+  jira_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ github.event.pull_request.title }}
+          regex: '${{ vars.JIRA_ISSUE_PREFIX }}-\d+$'
