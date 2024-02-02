@@ -1,5 +1,7 @@
 name: Check for Jira issue
-on: [pull_request]
+on: 
+  pull_request:
+    types: [opened, edited, reopened]
 
 jobs:
   jira_issue:
