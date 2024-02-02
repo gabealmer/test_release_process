@@ -5,8 +5,16 @@ jobs:
   jira_issue:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions-ecosystem/action-regex-match@v2
+      - name: 'Check Pull Request Title
+        uses: actions-ecosystem/action-regex-match@v2
         id: regex-match
         with:
           text: ${{ github.event.pull_request.title }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
+
+      - name: 'Fail'
+        uses: actions/github-script@v3
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        with:
+          script: |
+            core.setFailed('No Jira Issue found, e.x: ${{ vars.JIRA_KEY_PREFIX }}-123!')
