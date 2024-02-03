@@ -8,11 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         with:
@@ -20,3 +22,20 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
           generateReleaseNotes: true
+
+      - name: 'Search Jira issue in PR title, body and branch name'
+        uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }} ${{ github.event.pull_request.head.ref }}
+          regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+'
+          flags: gm
+
+      - uses: levigo/github-action-jira-fixversion@v1.0
+        with:
+          domain: ${{ secrets.JIRA_DOMAIN }}
+          username: ${{ secrets.JIRA_USERNAME }}
+          password: ${{ secrets.JIRA_TOKEN }}
+          versionName: ${{ steps.tag_version.outputs.new_tag }}
+          versionDescription: ${{ steps.tag_version.outputs.changelog }}
+          issueKeys: ${{ steps.regex-match.outputs.match }}
