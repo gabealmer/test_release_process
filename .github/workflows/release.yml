@@ -27,7 +27,7 @@ jobs:
         uses: actions-ecosystem/action-regex-match@v2
         id: regex-match
         with:
-          text: ${{ github.event.pull_request.title }} ${{ github.event.pull_request.body }} ${{ github.event.pull_request.head.ref }}
+          text: ${{ github.event.head_commit.message }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+'
           flags: gm
 
