@@ -23,11 +23,17 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
           generateReleaseNotes: true
 
+      - name: Get PR info
+        id: get_pr_info
+        uses: actions-ecosystem/action-get-merged-pull-request@v1.0.1
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+
       - name: 'Search Jira issue in PR title, body and branch name'
         uses: actions-ecosystem/action-regex-match@v2
-        id: regex-match
+        id: regex_match
         with:
-          text: ${{ github.event.head_commit.message }}
+          text: ${{ steps.get_pr_info.outputs.title }} ${{ steps.get_pr_info.outputs.body }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+'
           flags: gm
 
@@ -38,4 +44,4 @@ jobs:
           password: ${{ secrets.JIRA_TOKEN }}
           versionName: ${{ steps.tag_version.outputs.new_tag }}
           versionDescription: ${{ steps.tag_version.outputs.changelog }}
-          issueKeys: ${{ steps.regex-match.outputs.match }}
+          issueKeys: ${{ steps.regex_match.outputs.match || vars.JIRA_DEFUALT_ISSUE }}
