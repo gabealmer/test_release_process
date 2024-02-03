@@ -25,7 +25,7 @@ jobs:
           flags: gm
       
       - name: 'Check Pull Request Branch'
-        if: ${{ steps.regex-match-title.outputs.match == '' && steps.regex-match-body.outputs.match = ''}}
+        if: ${{ steps.regex-match-title.outputs.match == '' && steps.regex-match-body.outputs.match == ''}}
         uses: actions-ecosystem/action-regex-match@v2
         id: regex-match-branch
         with:
