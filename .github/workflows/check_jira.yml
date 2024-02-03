@@ -14,6 +14,7 @@ jobs:
         with:
           text: ${{ github.event.pull_request.title }}${{ github.event.pull_request.body }}${{ github.event.pull_request.head.ref }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
+          flags: gm
 
       - name: 'Fail'
         uses: actions/github-script@v3
