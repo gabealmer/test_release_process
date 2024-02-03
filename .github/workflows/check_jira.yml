@@ -6,6 +6,7 @@ on:
 jobs:
   jira_issue:
     runs-on: ubuntu-latest
+    name: 'Jira issue key'
     steps:
       - name: 'Check Pull Request Title'
         uses: actions-ecosystem/action-regex-match@v2
@@ -14,7 +15,7 @@ jobs:
           text: ${{ github.event.pull_request.title }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
 
-      - name: 'Check Pull Request Title'
+      - name: 'Check Pull Request Body'
         if: ${{ steps.regex-match-title.outputs.match == '' }}
         uses: actions-ecosystem/action-regex-match@v2
         id: regex-match-body
@@ -22,6 +23,20 @@ jobs:
           text: ${{ github.event.pull_request.body }}
           regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
           flags: gm
+      
+      - name: 'Check Pull Request Branch'
+        if: ${{ steps.regex-match-title.outputs.match == '' && steps.regex-match-body.outputs.match = ''}}
+        uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match-branch
+        with:
+          text: ${{ github.event.pull_request.body }}
+          regex: '${{ vars.JIRA_KEY_PREFIX }}-\d+$'
+          flags: gm
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: 'Fail'
         uses: actions/github-script@v3
