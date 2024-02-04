@@ -43,5 +43,5 @@ jobs:
           username: ${{ secrets.JIRA_USERNAME }}
           password: ${{ secrets.JIRA_TOKEN }}
           versionName: ${{ steps.tag_version.outputs.new_tag }}
-          versionDescription: ${{ steps.tag_version.outputs.changelog }}
+          versionDescription: ${{ steps.get_pr_info.outputs.title }} ${{ steps.get_pr_info.outputs.body }}
           issueKeys: ${{ steps.regex_match.outputs.match || vars.JIRA_DEFUALT_ISSUE }}
